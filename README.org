@@ -1,2 +1,0 @@
-* TP Allocateur mémoire: malloc
-
