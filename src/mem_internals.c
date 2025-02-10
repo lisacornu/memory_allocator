@@ -17,20 +17,43 @@ unsigned long knuth_mmix_one_round(unsigned long in)
 
 void *mark_memarea_and_get_user_ptr(void *ptr, unsigned long size, MemKind k)
 {
-    uint32_t* ptr_to_mem = *(uint32_t*)ptr;
+    uint64_t* ptr_to_mem = (uint64_t*)ptr;
+    uint64_t magic_number = (uint64_t) ((knuth_mmix_one_round((unsigned long)ptr) & ~(0b11UL)) | k) ;
+
     // marquage début
-    *ptr_to_mem = size;
-    *(ptr_to_mem + 2) = knuth_mmix_one_round(size);     // 2 uint32 = 8 octets
-    // marquage fin
+    *ptr_to_mem = (uint64_t) size;
+    *(ptr_to_mem + 1) = magic_number;    
     
+    // marquage fin
+    *(ptr_to_mem + (size/8) + (size%8 == 0 ? 0 : 1) - 2) = magic_number;
+    *(ptr_to_mem + (size/8) + (size%8 == 0 ? 0 : 1) - 1) = (uint64_t) size;
+
     return (void *)(ptr_to_mem + 2);
 }
 
 Alloc
 mark_check_and_get_alloc(void *ptr)
 {
-    /* ecrire votre code ici */
-    Alloc a = {};
+    uint64_t* ptr_to_block = ((uint64_t*)ptr - 2);
+
+    uint64_t size = *ptr_to_block;
+    uint64_t magic_number = *(ptr_to_block + 1);
+
+    MemKind memkin = magic_number & 0b11;
+
+    uint64_t th_magic_number = (uint64_t) ((knuth_mmix_one_round((unsigned long)(ptr_to_block)) & ~(0b11UL)) | memkin) ;
+    assert(magic_number == th_magic_number);
+
+    //taille deb == taille fin
+    assert(size == *(ptr_to_block + (size/8) + (size%8 == 0 ? 0 : 1) - 1));
+    //magic deb == magic fin
+    assert(magic_number == (*((ptr_to_block + (size/8)) + (size%8 == 0 ? 0 : 1) - 2)));
+
+    Alloc a = {
+        (void*)(ptr_to_block),
+        memkin,
+        size
+    };
     return a;
 }
 

@@ -141,17 +141,14 @@ void used()
 void help()
 {
 	printf("Commandes disponibles :\n");
-	printf("1) init : initialisation ou réinitialisation de l'allocateur\n");
-	printf("2) alloc <taille> : allocation d'un bloc mémoire\n");
+	printf("1) alloc <taille> : allocation d'un bloc mémoire\n");
 	printf("\tLa taille peut être en décimal ou en héxadécimal (préfixe 0x)\n");
 	printf("\tretour : identificateur de bloc et adresse de départ de la zone\n");
-	printf("3) free <identificateur> : libération d'un bloc\n");
-	printf("4) destroy : libération de l'allocateur\n");
-	printf("4) show : affichage la taille initiale et de l'adresse de départ\n");	
-	printf("5) used : affichage de la liste des blocs occupés\n");
+	printf("2) free <identificateur> : libération d'un bloc\n");	
+	printf("3) used : affichage de la liste des blocs occupés\n");
 	printf("\tsous la forme {identificateur, adresse de départ, taille}\n");		
-	printf("6) help : affichage de ce manuel\n");
-	printf("7) exit : quitter le shell\n");
+	printf("4) help : affichage de ce manuel\n");
+	printf("5) exit : quitter le shell\n");
 	
 	printf("\nRemarques :\n");
 	printf("1) Au lancement, le shell appelle mem_init\n");
